@@ -16,9 +16,10 @@ python3Packages.buildPythonApplication {
   };
 
   build-system = with python3Packages; [
-    setuptools
+    poetry
   ];
   dependencies = with python3Packages; [
     django
+    gunicorn
   ];
 }
