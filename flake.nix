@@ -14,12 +14,17 @@
   };
 
   outputs =
-    inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [ inputs.treefmt-nix.flakeModule ];
+    {
+      self,
+      flake-parts,
+      treefmt-nix,
+      ...
+    }@inputs:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [ treefmt-nix.flakeModule ];
       systems = [ "x86_64-linux" ];
       flake = {
-        nixosModules.gunicornix = import ./module.nix;
+        nixosModules.djangunicornix = import ./module.nix;
       };
       perSystem =
         {
@@ -32,6 +37,10 @@
           apps.default = {
             type = "app";
             program = self'.packages.poetry-gunicorn;
+          };
+          checks.djangunicornix = pkgs.callPackage ./test.nix {
+            inherit self;
+            inherit (self'.packages) djangunicornix;
           };
           devShells.default = pkgs.mkShell {
             nativeBuildInputs = [ config.treefmt.build.wrapper ];
