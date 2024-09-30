@@ -49,10 +49,27 @@
           packages = {
             default = self'.packages.djangunicornix;
             djangunicornix = pkgs.python3Packages.callPackage ./package.nix { };
+            docker = pkgs.dockerTools.buildLayeredImage {
+              name = "djangunicornix";
+              tag = "latest";
+              contents = [
+                pkgs.poetry
+                # TODO: gunicorn and uvicorn should be propagated
+                # Also, poetry should do this I guess ?
+                (pkgs.python3.withPackages (ps: [
+                  self'.packages.djangunicornix
+                  ps.gunicorn
+                  ps.uvicorn
+                ]))
+              ];
+              config = {
+                Cmd = pkgs.lib.getExe self'.packages.poetry-gunicorn;
+                WorkingDir = "${self'.packages.djangunicornix.src}";
+              };
+            };
             poetry-gunicorn = pkgs.writeShellApplication {
               name = "poetry-gunicorn";
               runtimeInputs = [ self'.packages.djangunicornix ];
-              # Put here your dev gunicorn config
               text = ''
                 poetry run gunicorn \
                   --access-logfile - \
