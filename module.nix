@@ -19,6 +19,16 @@ in
   options.services.djangunicornix = {
     enable = lib.mkEnableOption "djangunicornix service";
     package = lib.mkPackageOption pkgs "djangunicornix" { };
+    # TODO: gunicorn and uvicorn should be propagated
+    # so we shouldn't need this option
+    exe = lib.mkOption {
+      type = lib.types.package;
+      default = pkgs.python3.withPackages (ps: [
+        cfg.package
+        ps.gunicorn
+        ps.uvicorn
+      ]);
+    };
     dataDir = lib.mkOption {
       type = lib.types.path;
       default = "/var/lib/djangunicornix";
@@ -70,7 +80,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ cfg.package ];
+    # TODO: I'm really not sure about this
+    # way of installing python modules
+    environment.systemPackages = [
+      cfg.exe
+    ];
 
     users.users.djangunicornix = {
       description = "djangunicornix server user";
@@ -87,9 +101,10 @@ in
       description = "gunicorn nix example";
       serviceConfig = {
         ExecStart = ''
-          ${lib.getExe pkgs.python3Packages.gunicorn} \
-          --config ${configFile} \
-          djangunicornix.asgi:application"
+          ${lib.getExe cfg.exe}  \
+            -m gunicorn \
+            --config ${configFile} \
+            djangunicornix.asgi:application
         '';
         User = "djangunicornix";
         Group = "djangunicornix";

@@ -2,7 +2,7 @@
   lib,
   python3Packages,
 }:
-python3Packages.buildPythonApplication {
+python3Packages.buildPythonPackage {
   pname = "gunicornix";
   version = "0.0.1";
   pyproject = true;
