@@ -19,7 +19,12 @@
       imports = [ inputs.treefmt-nix.flakeModule ];
       systems = [ "x86_64-linux" ];
       perSystem =
-        { config, pkgs, self', ... }:
+        {
+          config,
+          pkgs,
+          self',
+          ...
+        }:
         {
           apps.default = {
             type = "app";
