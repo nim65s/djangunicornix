@@ -12,14 +12,16 @@ python3Packages.buildPythonApplication {
     fileset = lib.fileset.unions [
       ./djangunicornix
       ./pyproject.toml
+      ./README.md
     ];
   };
 
   build-system = with python3Packages; [
-    poetry
+    poetry-core
   ];
   dependencies = with python3Packages; [
     django
     gunicorn
+    uvicorn
   ];
 }

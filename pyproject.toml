@@ -11,6 +11,7 @@ readme = "README.md"
 version = "0.0.1"
 
 [tool.poetry.dependencies]
-Django = "^5.1.1"
+Django = "^4.2.1"
 gunicorn = "^23.0.0"
 python = "^3.12"
+uvicorn = "^0.29.0"
