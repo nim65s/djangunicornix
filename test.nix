@@ -1,5 +1,5 @@
 {
-  djangunicornix,
+  djangunicornix-nix,
   pkgs,
   self,
 }:
@@ -11,7 +11,7 @@ pkgs.nixosTest {
     environment.systemPackages = [ pkgs.curl ];
     services.djangunicornix = {
       enable = true;
-      package = djangunicornix;
+      package = djangunicornix-nix;
     };
     system.stateVersion = "24.05";
   };

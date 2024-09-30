@@ -7,6 +7,11 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    poetry2nix = {
+      url = "github:nix-community/poetry2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -17,6 +22,7 @@
     {
       self,
       flake-parts,
+      poetry2nix,
       treefmt-nix,
       ...
     }@inputs:
@@ -33,6 +39,9 @@
           self',
           ...
         }:
+        let
+          inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryApplication;
+        in
         {
           apps.default = {
             type = "app";
@@ -40,36 +49,31 @@
           };
           checks.djangunicornix = pkgs.callPackage ./test.nix {
             inherit self;
-            inherit (self'.packages) djangunicornix;
+            inherit (self'.packages) djangunicornix-nix;
           };
           devShells.default = pkgs.mkShell {
             nativeBuildInputs = [ config.treefmt.build.wrapper ];
             inputsFrom = [ self'.packages.default ];
           };
           packages = {
-            default = self'.packages.djangunicornix;
-            djangunicornix = pkgs.python3Packages.callPackage ./package.nix { };
+            default = self'.packages.djangunicornix-poetry;
+            djangunicornix-nix = pkgs.python3Packages.callPackage ./package.nix { };
+            djangunicornix-poetry = mkPoetryApplication { projectDir = ./.; };
             docker = pkgs.dockerTools.buildLayeredImage {
               name = "djangunicornix";
               tag = "latest";
               contents = [
                 pkgs.poetry
-                # TODO: gunicorn and uvicorn should be propagated
-                # Also, poetry should do this I guess ?
-                (pkgs.python3.withPackages (ps: [
-                  self'.packages.djangunicornix
-                  ps.gunicorn
-                  ps.uvicorn
-                ]))
+                self'.packages.djangunicornix-poetry.dependencyEnv
               ];
               config = {
                 Cmd = pkgs.lib.getExe self'.packages.poetry-gunicorn;
-                WorkingDir = "${self'.packages.djangunicornix.src}";
+                WorkingDir = "${self'.packages.djangunicornix-poetry.src}";
               };
             };
             poetry-gunicorn = pkgs.writeShellApplication {
               name = "poetry-gunicorn";
-              runtimeInputs = [ self'.packages.djangunicornix ];
+              runtimeInputs = [ self'.packages.djangunicornix-poetry ];
               text = ''
                 poetry run gunicorn \
                   --access-logfile - \
