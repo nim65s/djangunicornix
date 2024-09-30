@@ -56,7 +56,7 @@
             programs = {
               deadnix.enable = true;
               mdformat.enable = true;
-              nixfmt-rfc-style.enable = true;
+              nixfmt.enable = true;
               ruff-check.enable = true;
               ruff-format.enable = true;
               toml-sort = {
