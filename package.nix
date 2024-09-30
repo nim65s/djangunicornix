@@ -11,6 +11,7 @@ python3Packages.buildPythonApplication {
     root = ./.;
     fileset = lib.fileset.unions [
       ./djangunicornix
+      ./manage.py
       ./pyproject.toml
       ./README.md
     ];
