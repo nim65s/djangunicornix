@@ -9,3 +9,9 @@ Django app packaged with gunicorn on NixOS
 ## Quick run
 
 `nix run`
+
+## Prod on nixos
+
+Add `djangounicornix` nixos module, and enable `services.djangunicornix.enable` in your config.
+
+Ref. the test in a VM.
