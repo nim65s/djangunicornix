@@ -18,6 +18,9 @@
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [ inputs.treefmt-nix.flakeModule ];
       systems = [ "x86_64-linux" ];
+      flake = {
+        nixosModules.gunicornix = import ./module.nix;
+      };
       perSystem =
         {
           config,
@@ -40,6 +43,7 @@
             poetry-gunicorn = pkgs.writeShellApplication {
               name = "poetry-gunicorn";
               runtimeInputs = [ self'.packages.djangunicornix ];
+              # Put here your dev gunicorn config
               text = ''
                 poetry run gunicorn \
                   --access-logfile - \
