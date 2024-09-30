@@ -8,6 +8,4 @@ Django app packaged with gunicorn on NixOS
 
 ## Quick run
 
-```
-poetry run gunicorn --access-logfile - --bind 0.0.0.0:5000 --workers 4 -k uvicorn.workers.UvicornWorker djangunicornix.asgi:application --timeout 90
-```
+`nix run`

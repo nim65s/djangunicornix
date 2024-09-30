@@ -28,7 +28,7 @@
         {
           apps.default = {
             type = "app";
-            program = pkgs.python3.withPackages (_: [ self'.packages.default ]);
+            program = self'.packages.poetry-gunicorn;
           };
           devShells.default = pkgs.mkShell {
             nativeBuildInputs = [ config.treefmt.build.wrapper ];
@@ -37,6 +37,19 @@
           packages = {
             default = self'.packages.djangunicornix;
             djangunicornix = pkgs.python3Packages.callPackage ./package.nix { };
+            poetry-gunicorn = pkgs.writeShellApplication {
+              name = "poetry-gunicorn";
+              runtimeInputs = [ self'.packages.djangunicornix ];
+              text = ''
+                poetry run gunicorn \
+                  --access-logfile - \
+                  --bind 0.0.0.0:5000 \
+                  --workers 4 \
+                  --timeout 90 \
+                  -k uvicorn.workers.UvicornWorker \
+                  djangunicornix.asgi:application
+              '';
+            };
           };
           treefmt = {
             projectRootFile = "flake.nix";
