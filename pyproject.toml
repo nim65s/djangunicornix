@@ -1,16 +1,16 @@
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
+
 [tool.poetry]
-name = "djangunicornix"
-version = "0.0.1"
-description = "packaging gunicorn and nix on a django app"
 authors = ["Guilhem Saurel <guilhem.saurel@laas.fr>"]
+description = "packaging gunicorn and nix on a django app"
 license = "BSD-2-Clause"
+name = "djangunicornix"
 readme = "README.md"
+version = "0.0.1"
 
 [tool.poetry.dependencies]
-python = "^3.12"
 Django = "^5.1.1"
 gunicorn = "^23.0.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+python = "^3.12"
